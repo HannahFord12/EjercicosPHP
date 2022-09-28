@@ -1,3 +1,1 @@
 # EjercicosPHP
-
-hola
