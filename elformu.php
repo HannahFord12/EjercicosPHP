@@ -37,7 +37,7 @@
     <form action="elformu.php" method="post" enctype="multipart/form-data">
         Nombre usuario: <input type="texto" name="username"><br>
         Contraseña: <input type="password" name="password"><br>
-        <input type="submit" value="Registrarse" name="submit">
+        <input type="submit" value="Loguearse" name="submit">
     </form>
 
 </body>
