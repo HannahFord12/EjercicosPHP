@@ -7,13 +7,13 @@
     <title>Document</title>
 </head>
 <body>
-    Hola  
+    Hola 
     <?php echo $_POST["nombre"]; ?>
     <br>
     Tu email es: 
     <?php echo $_POST["email"]; ?>
     <br>
-    Estudios:
+    Has estudiado:
     <?php echo $_POST["educacion"];?>
     <br>
     Imagen:
