@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 use App\Entity\Contacto;
+use App\Entity\Provincia;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,7 +41,7 @@ class ContactoController extends AbstractController
 
      public function buscar(ManagerRegistry $doctrine, $texto): Response{
         $repositorio =$doctrine->getRepository(Contacto::class);
-        $contactos=$repositorio->findByNombre($texto);
+        $contactos=$repositorio->findByName($texto); //Hay que mirar pq no funciona
 
         return $this->render('lista_contactos.html.twig', [
             'contactos' => $contactos
@@ -64,5 +65,96 @@ class ContactoController extends AbstractController
         }catch(\Exception $e){
             return new Response("Error insertando objetos");
         }
+    }
+    /**
+     * @Route("/contacto/update/{id}/{nombre}", name="modificar_contacto")
+     */
+    public function update(ManagerRegistry $doctrine, $id, $nombre): Response{
+        $entityManager =$doctrine->getManager();
+        $repositorio =$doctrine -> getRepository(Contacto::class);
+        $contacto = $repositorio -> find($id);
+        if($contacto){
+            $contacto->setNombre($nombre);
+            try{
+                $entityManager->flush();
+                return $this->render('ficha_contacto.html.twig',[
+                    'contacto' => $contacto
+                ]);
+            }catch (\Exception $e){
+                return new Response("Error insertando objeto");
+            }
+        }else
+            return $this ->render('ficha_contacto.html.twig', [
+                'contacto' => null
+            ]);
+    }
+    /**
+     * @Route("/contacto/delete/{id}", name="eliminar_contacto")
+     */
+    public function delete(ManagerRegistry $doctrine, $id): Response{
+        $entityManager  =$doctrine->getManager();
+        $repositorio = $doctrine->getRepository(Contacto::class);
+        $contacto=$repositorio->find($id);
+        if($contacto){
+            try{
+                $entityManager->remove($contacto);
+                $entityManager->flush();
+                return new Response("contacto eliminado");
+            }catch(\Exception $e){
+                return new Response("Error eliminado objeto");
+            }
+        }else
+            return $this->render('ficha_contacto.html.twig',[
+                'contacto'=>null
+            ]);
+        
+    }
+    /**
+     * @Route("/contacto/insertarConProvincia", name="insertar_con_provincia_contacto")
+     */
+    public function insertarConProvincia(ManagerRegistry $doctrine): Response{
+        $entityManager =$doctrine->getManager();
+        $provincia=new Provincia();
+
+        $provincia->setNombre("Alicante");
+        $contacto=new Contacto();
+
+        $contacto->setNombre("Inserción de prueba con provincia");
+        $contacto->setTelefono("900220022");
+        $contacto->setEmail("insercion.de.prueba.provincia@contcto.es");
+        $contacto->setProvincia($provincia);
+
+        $entityManager->persist($provincia);
+        $entityManager->persist($contacto);
+
+        $entityManager->flush();
+        return $this->render('ficha_contacto.html.twig',[
+            'contacto'=>$contacto
+        ]);
+    }
+
+    /**
+     * @Route("/contacto/insertarSinProvincia", name="insertar_sin_provincia_contacto")
+     */
+
+    public function insertarSinProvincia(ManagerRegistry $doctrine): Response{
+        $entityManager=$doctrine->getManager();
+        $repositorio=$doctrine->getRepository(Provincia::class);
+
+        $provincia=$repositorio->findOneBy(["nombre" => "Alicante"]);
+
+        $contacto=new Contacto();
+
+        $contacto->setNombre("Inserción de prueba sin provincia");
+        $contacto->setTelefono("900220022");
+        $contacto->setEmail("insercion.de.prueba.provincia@contcto.es");
+        $contacto->setProvincia($provincia);
+
+        $entityManager->persist($contacto);
+
+        $entityManager->flush();
+        return $this->render('ficha_contacto.html.twig',[
+            'contacto'=>$contacto
+        ]);
     }
 }

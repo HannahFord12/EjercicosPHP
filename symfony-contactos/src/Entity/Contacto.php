@@ -22,6 +22,10 @@ class Contacto
     #[ORM\Column(length: 255)]
     private ?string $email = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Provincia $Provincia = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +63,18 @@ class Contacto
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getProvincia(): ?Provincia
+    {
+        return $this->Provincia;
+    }
+
+    public function setProvincia(?Provincia $Provincia): self
+    {
+        $this->Provincia = $Provincia;
 
         return $this;
     }
