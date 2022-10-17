@@ -1,5 +1,6 @@
 
 <?php
+//cookies
     $language="";
     $language = $_GET['setLanguage'] ?? $_COOKIE['language'] ?? "es";
 
