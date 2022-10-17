@@ -1,4 +1,5 @@
 <?php
+    //cabecera de respuesta 4
     header('Content-Type: application/zip');
     header('Content-Length: 100000');
     header('Content-Disposition: attachment; film="download.zip');
