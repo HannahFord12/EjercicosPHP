@@ -1,5 +1,5 @@
 <?php
-
+    //cabecera de solicitud 2
     $ser = $_SERVER['HTTP_USER_AGENT'];
     //echo $ser;
     
