@@ -1,4 +1,5 @@
 <?php
+    //cabecera solicitud 1
     $ser=substr($_SERVER['HTTP_ACCEPT_LANGUAGE'],0,2);
     
     /*switch($ser){
