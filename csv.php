@@ -1,5 +1,6 @@
 <?php
-
+    //ejercicio header cabecera de respuesta 2
+    
     header('Content_type: text/csv');
     header('Content-Disposition:attachment; filename="productos.csv"');
 
