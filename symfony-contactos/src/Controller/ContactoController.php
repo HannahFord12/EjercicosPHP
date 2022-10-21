@@ -98,7 +98,7 @@ class ContactoController extends AbstractController
 
      public function buscar(ManagerRegistry $doctrine, $texto): Response{
         $repositorio =$doctrine->getRepository(Contacto::class);
-        $contactos=$repositorio->findByName($texto); //Hay que mirar pq no funciona
+        $contactos=$repositorio->findByName($texto); 
 
         return $this->render('lista_contactos.html.twig', [
             'contactos' => $contactos
