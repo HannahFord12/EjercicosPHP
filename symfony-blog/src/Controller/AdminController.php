@@ -8,8 +8,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Form\CategoryFormType;
+use App\Form\ImageFormType;
 use App\Entity\Category;
+use App\Entity\Image;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class AdminController extends AbstractController
 {
@@ -20,20 +27,66 @@ class AdminController extends AbstractController
             'controller_name' => 'AdminController',
         ]);
     }
-    public function adminDashboard(): Response{
+    public function adminDashboard(): Response
+    {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
     
         // or add an optional message - seen by developers
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'User tried to access a page without having ROLE_ADMIN');
         
-        new Response("Sí que puedes entrar");
+        return new Response("Sí que puedes entrar");
+        
     }
     
     /**
-     * @Route("/admin/imagenes", name="app_imagenes")
-     */
-    public function imagenes():Response{
-        return $this->render('admin/imagenes.html.twig', []);
+    * @Route("/admin/images", name="app_images")
+    */
+    public function images(ManagerRegistry $doctrine, Request $request, SluggerInterface $slugger): Response
+    {
+    
+        $repository = $doctrine->getRepository(Image::class);
+
+        $images = $repository->findAll();
+
+        $image = new Image();
+        $form = $this->createForm(ImageFormType::class, $image);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $file = $form->get('File')->getData();
+            if ($file) {
+                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                // this is needed to safely include the file name as part of the URL
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+        
+                // Move the file to the directory where images are stored
+                try {
+        
+                    $file->move(
+                        $this->getParameter('images_directory'), $newFilename
+                    );
+                    $filesystem = new Filesystem();
+                    $filesystem->copy(
+                        $this->getParameter('images_directory') . '/'. $newFilename, 
+                        $this->getParameter('portfolio_directory') . '/'.  $newFilename, true);
+        
+                } catch (FileException $e) {
+                    // ... handle exception if something happens during file upload
+                }
+        
+                // updates the 'file$filename' property to store the PDF file name
+                // instead of its contents
+                $image->setFile($newFilename);
+            }
+            $image = $form->getData();  
+        }
+        
+        return $this->render('admin/images.html.twig', array(
+            'form' => $form->createView(),
+            'images' => $images   
+        ));
+
+        
     }
     /**
     * @Route("/admin/categories", name="app_categories")

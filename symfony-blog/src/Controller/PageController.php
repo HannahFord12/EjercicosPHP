@@ -10,14 +10,19 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use App\Form\ContactFormType;
 use App\Entity\Contact;
+use App\Entity\Category;
+
 
 class PageController extends AbstractController
 {
     #[Route('/', name: 'index')]
-    public function index(): Response
+    public function index(ManagerRegistry $doctrine, Request $request): Response
     {
-        return $this->render('page/index.html.twig', []);
-        
+        $repository = $doctrine->getRepository(Category::class);
+
+        $categories = $repository->findAll();
+
+        return $this->render('page/index.html.twig', ['categories' => $categories]);
     }
     /**
      * @Route("/about", name="about")
