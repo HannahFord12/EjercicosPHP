@@ -1,15 +1,19 @@
 {% extends 'base.html.twig' %}
-{% block title%}New Post{% endblock %}
+{% block title %}New Post{% endblock %}
 
-{% block body%}
+{% block body %}
     {% if not post %}
         <h2>Post not found</h2>
     {% else %}
         {{post.title}}
-        {{asset('images/blog/' ~ post.image) }}
+        {{ asset('images/blog/' ~ post.image) }}
         {{post.content}}
         {{post.postUser.name}}
         {{post.publishedAt | date('d') }} {{ post.publishedAt | date('F') }}
     {% endif %}
+    {% for recent in recents %}
+        {{ include ('partials/_recent_post.html.twig', {'recent': recent}) }}
+        {{ include ('partials/_form_comment.html.twig') }}
+    {% endfor %}
 
 {% endblock %}

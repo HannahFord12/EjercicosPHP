@@ -10,7 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Entity\Post;
 use App\Form\PostFormType;
-use Doctrine\Persistence\AbstractManagerRegistry\findAllPaginated;
+use App\Entity\Comment;
+
 
 class BlogController extends AbstractController
 {
@@ -28,21 +29,43 @@ class BlogController extends AbstractController
     /**
      * @Route("/blog", name="blog")
      */
-    public function blog():Response{
-        return $this->render('publi/contacto.html',[]);
+    public function blog(ManagerRegistry $doctrine):Response{
+        $repository = $doctrine->getRepository(Post::class);
+        $posts = $repository->findAll();
+        $recents = $repository->findRecents();
+        return $this->render('blog/blog.html.twig', [
+            'posts' => $posts,
+            'recents' => $recents
+        ]);
+        
     }
-    /**
-    * @Route("/single_post/{slug}", name="single_post")
-    */
+    
+    #[Route('/single_post/{slug}', name: 'single_post')]
     public function post(ManagerRegistry $doctrine, $slug): Response
     {
-        $repositorio = $doctrine->getRepository(Post::class);
-        $post = $repositorio->findOneBy(["slug"=>$slug]);
-
+        $repository = $doctrine->getRepository(Post::class);
+        $post = $repository->findOneBy(["Slug"=>$slug]);
+        $recents = $repository->findRecents();
+        $comment = new Comment();
+        $form = $this->createForm(CommentFormType::class, $comment);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment = $form->getData();
+            $comment->setPost($post);  
+            //Aumentamos en 1 el número de comentarios del post
+            $post->setNumComments($post->getNumComments() + 1);
+            $entityManager = $doctrine->getManager();    
+            $entityManager->persist($comment);
+            $entityManager->flush();
+            return $this->redirectToRoute('single_post', ["slug" => $post->getSlug()]);
+        }
         return $this->render('blog/single_post.html.twig', [
             'post' => $post,
+            'recents' => $recents,
+            'commentForm' => $form->createView()
         ]);
     }
+
     /**
     * @Route("/blog/new", name="new_post")
     */
@@ -50,7 +73,6 @@ class BlogController extends AbstractController
     {
         $post = new Post();
         $form = $this->createForm(PostFormType::class, $post);
-        $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $post = $form->getData();   
             $post->setSlug($slugger->slug($post->getTitle()));

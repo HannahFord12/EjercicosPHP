@@ -40,18 +40,26 @@ class PostRepository extends ServiceEntityRepository
     }
 
    /**
-   * @return Post[] Returns an array of Post objects
+    * @return Post[] Returns an array of Post objects
     */
-  public function findByExampleField($value): array
-  {
-       return $this->createQueryBuilder('p')
+    public function findAllPaginated(int $page)
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.publishedAt', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+  //public function findByExampleField($value): array
+  //{
+ //      return $this->createQueryBuilder('p')
 //            ->andWhere('p.exampleField = :val')
 //            ->setParameter('val', $value)
-           ->orderBy('p.id', 'ASC')
+//          ->orderBy('p.id', 'ASC')
 //            ->setMaxResults(10)
-           ->getQuery()
-            ->getResult();
-    }
+//         ->getQuery()
+//          ->getResult();
+   // }
 
 //    public function findOneBySomeField($value): ?Post
 //    {
@@ -62,4 +70,18 @@ class PostRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    /**
+    * @return Post[] Returns an array of Post objects
+    */
+    public function findRecents()
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.publishedAt', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
 }
