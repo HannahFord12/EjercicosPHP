@@ -10,16 +10,21 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Entity\Post;
 use App\Form\PostFormType;
+use Doctrine\Persistence\AbstractManagerRegistry\findAllPaginated;
 
 class BlogController extends AbstractController
 {
-    #[Route('/blog', name: 'app_blog')]
-    public function index(): Response
+    #[Route('/blog/{page}', name: 'blog', requirements: ['page' => '\d+'])]
+    public function index(ManagerRegistry $doctrine, int $page = 1): Response
     {
-        return $this->render('blog/index.html.twig', [
-            'controller_name' => 'BlogController',
+        $repository = $doctrine->getRepository(Post::class);
+        $posts = $repository->findAllPaginated($page);
+
+        return $this->render('blog/blog.html.twig', [
+            'posts' => $posts,
         ]);
     }
+
     /**
      * @Route("/blog", name="blog")
      */
@@ -33,6 +38,7 @@ class BlogController extends AbstractController
     {
         $repositorio = $doctrine->getRepository(Post::class);
         $post = $repositorio->findOneBy(["slug"=>$slug]);
+
         return $this->render('blog/single_post.html.twig', [
             'post' => $post,
         ]);
@@ -54,14 +60,13 @@ class BlogController extends AbstractController
             $entityManager = $doctrine->getManager();    
             $entityManager->persist($post);
             $entityManager->flush();
-            return $this->render('blog/new_post.html.twig', array(
-                'form' => $form->createView()    
-            ));
+            return $this->redirectToRoute('single_post', ["slug" => $post->getSlug()]);
+
             //return $this->redirectToRoute('single_post', ["slug" => $post->getSlug()]);
         }   //todos los que redirigen a singel post hay que ponerlos a slug
         return $this->render('blog/new_post.html.twig', array(
             'form' => $form->createView()    
         ));
     }
-
+    
 }

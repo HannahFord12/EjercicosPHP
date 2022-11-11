@@ -79,6 +79,10 @@ class AdminController extends AbstractController
                 $image->setFile($newFilename);
             }
             $image = $form->getData();  
+            $entityManager = $doctrine->getManager();    
+            $entityManager->persist($image);
+            $entityManager->flush();
+        
         }
         
         return $this->render('admin/images.html.twig', array(

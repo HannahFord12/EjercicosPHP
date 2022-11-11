@@ -1,19 +1,14 @@
 {% extends 'base.html.twig' %}
-{% block title%}Images{% endblock %}
-{%  block stylesheet %}
-   <link href="{{ asset('css/estilos.css') }}" rel="stylesheet" />
-   <link href="{{ asset('css/magnific-popup.css') }}" rel="stylesheet" />
-{%  endblock stylesheet %}
+{% block title%}New Post{% endblock %}
+
 {% block body%}
 <!-- Principal Content Start -->
    <div id="new Post">
    	  <div class="container">
    	    <div class="col-xs-12 col-sm-8 col-sm-push-2">
-		
        	   <h1>New Post</h1>
 			   {{ form(form, {'attr': {'class':'form-horizontal'}}) }}
        	   <hr class="divider">
-		
 		</div>   
    	  </div>
    </div>
