@@ -69,7 +69,10 @@ class Comment
 
         return $this;
     }
-
+    public function __construct()
+    {
+        $this->publishedAt = new \DateTime();
+    }
     public function getPublishedAt(): ?\DateTimeInterface
     {
         return $this->publishedAt;

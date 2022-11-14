@@ -13,7 +13,7 @@
     {% endif %}
     {% for recent in recents %}
         {{ include ('partials/_recent_post.html.twig', {'recent': recent}) }}
-        {{ include ('partials/_form_comment.html.twig') }}
     {% endfor %}
+        {{ include ('partials/_form_comment.html.twig')}}
 
 {% endblock %}

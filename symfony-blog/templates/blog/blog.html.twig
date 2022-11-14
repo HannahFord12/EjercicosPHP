@@ -4,5 +4,7 @@
 {% block body %}
     {% for post in posts %}
         {{ include ('partials/_post.html.twig', {'post': post}) }}
+       
     {% endfor %}
+        
 {% endblock %}

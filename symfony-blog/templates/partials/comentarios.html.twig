@@ -1,0 +1,10 @@
+ <div class="new new1"> <!--Esto no funcion-->
+    <hr>
+        <a href="{{ path('blog', {'slug':recents.slug}) }}">{{ recents.title }}</a>
+        <h5> By <span>{{ recents.postUser.name }}</span></h5>
+        <p>{{ recent.publishedAt | date('d') }} {{ recents.publishedAt | date('F') }}</p>
+        <p><i class="fa fa-clock-o sr-icons"></i>
+         {{ recents.publishedAt | date('h') }}
+         {{ recents.publishedAt | date('A') }}
+         </p>
+</div>

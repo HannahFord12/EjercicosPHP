@@ -11,6 +11,8 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use App\Entity\Post;
 use App\Form\PostFormType;
 use App\Entity\Comment;
+use App\Form\CommentFormType;
+
 
 
 class BlogController extends AbstractController
@@ -41,10 +43,10 @@ class BlogController extends AbstractController
     }
     
     #[Route('/single_post/{slug}', name: 'single_post')]
-    public function post(ManagerRegistry $doctrine, $slug): Response
+    public function post(ManagerRegistry $doctrine, Request $request, $slug): Response
     {
         $repository = $doctrine->getRepository(Post::class);
-        $post = $repository->findOneBy(["Slug"=>$slug]);
+        $post = $repository->findOneBy(["slug"=>$slug]);
         $recents = $repository->findRecents();
         $comment = new Comment();
         $form = $this->createForm(CommentFormType::class, $comment);
