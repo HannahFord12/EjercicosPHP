@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\Post;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Pagination\Paginator;
+
 
 /**
  * @extends ServiceEntityRepository<Post>
@@ -42,14 +44,27 @@ class PostRepository extends ServiceEntityRepository
    /**
     * @return Post[] Returns an array of Post objects
     */
-    public function findAllPaginated(int $page)
+    public function findAllPaginated(int $page): Paginator
     {
-        return $this->createQueryBuilder('p')
-            ->orderBy('p.publishedAt', 'DESC')
-            ->getQuery()
-            ->getResult()
+        $qb =  $this->createQueryBuilder('p')
+            ->orderBy('p.publishedAt', 'DESC')            
         ;
+
+        return (new Paginator($qb))->paginate($page); //ns pq el error
     }
+    /**
+    * @return Post[] Returns an array of Post objects
+    */
+    public function findByTextPaginated(int $page, string $searchTerm)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->andWhere("p.content LIKE :val")
+            ->setParameter('val', '%'.$searchTerm.'%')
+            ->orderBy('p.publishedAt', 'DESC');
+
+        return (new Paginator($qb))->paginate($page);
+    }
+
   //public function findByExampleField($value): array
   //{
  //      return $this->createQueryBuilder('p')
